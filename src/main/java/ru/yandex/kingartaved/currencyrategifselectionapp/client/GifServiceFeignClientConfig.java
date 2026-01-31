@@ -1,0 +1,46 @@
+package ru.yandex.kingartaved.currencyrategifselectionapp.client;
+
+import feign.RequestInterceptor;
+import feign.Retryer;
+import feign.codec.ErrorDecoder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class GifServiceFeignClientConfig {
+    @Value("${external-giphy.api-key}")
+    private String apiKey;
+
+    /**
+     * Автоматически добавляет API-ключ ко всем запросам.
+     */
+    @Bean
+    public RequestInterceptor feignRequestInterceptor() {
+        return requestTemplate -> {
+            requestTemplate.query("api_key", apiKey);
+        };
+    }
+
+    @Bean
+    public ErrorDecoder feignErrorDecoder() {
+        return (methodKey, response) -> {
+            if (response.status() == 401) {
+                return new RuntimeException("Неверный API-ключ");
+            } else if (response.status() == 404) {
+                return new RuntimeException("Гифка не найдена");
+            }
+            return new RuntimeException("Ошибка внешнего API: " + response.status());
+        };
+    }
+
+    @Bean
+    public Retryer retryer() {
+        return new Retryer.Default(
+                100,
+                1000,
+                3
+        );
+    } //todo: уточнить логику работы, проверить.
+
+}

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: currency-rate-gif-selection-app
+
+external-giphy:
+  api-key: ${GIPHY_API_KEY} # задать в Run Configuration: sD79...
+  url: https://api.giphy.com/v1/gifs/search # todo: заменить на путь рандома.
+  search-word:
+    positive-rate: rich
+    negative-rate: broke
+
+external-exchangerate:
+  url: https://v6.exchangerate-api.com/v6/${EXCHANGERATE_API_KEY}/latest/USD # todo: задать в Run Configuration: eafb...
+
