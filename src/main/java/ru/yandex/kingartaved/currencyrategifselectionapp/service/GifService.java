@@ -42,7 +42,7 @@ public class GifService {
                 negativeRateSearchWord;
 
         List<GifDto> gifs = gifSearchService.getGifsForWord(searchWord);
-
+        System.out.println("Размер списка: " + gifs.size());
         return gifs.get(new Random().nextInt(gifs.size()));
     }
 

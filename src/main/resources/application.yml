@@ -13,7 +13,7 @@ spring.liquibase:
   enabled: true
 
 spring.jpa:
-  hibernate.ddl-auto: update
+  hibernate.ddl-auto: validate
   show-sql: true
 
 external-giphy:
@@ -22,7 +22,7 @@ external-giphy:
   search-word:
     positive-rate: rich
     negative-rate: broke
-  search-limit: 100 # Лимит на количество гифок, которые можно получить за один запрос.
+  search-limit: 25 # Лимит на количество гифок, которые можно получить за один запрос (max = 50, ограничено Giphy API).
 
 external-exchangerate:
   url: https://v6.exchangerate-api.com/v6/${EXCHANGERATE_API_KEY}/latest # задать в Run Configuration: eafb...
