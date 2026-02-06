@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-currency-rate-table
+      author: "kingartaved"
+      preConditions:
+        onFail: MARK_RAN
+        onFailMessage: "Таблица currency_rate уже существует. Changeset помечен как выполненным."
+        not:
+          tableExists:
+            tableName: currency_rate
+      comments: "Таблица хранит данные о курсе валют на определенную дату."
+      changes:
+        - createTable:
+            tableName: currency_rate
+            columns:
+                - column:
+                      name: id
+                      type: bigserial
+                      constraints:
+                          primaryKey: true
+                          nullable: false
+                - column:
+                      name: currency
+                      type: varchar(3)
+                      constraints:
+                          nullable: false
+                - column:
+                    name: base_currency
+                    type: varchar(3)
+                    constraints:
+                      nullable: false
+                - column:
+                      name: rate
+                      type: numeric(10, 4)
+                      constraints:
+                          nullable: false
+                - column:
+                      name: date
+                      type: timestamp
+                      defaultValueComputed: current_timestamp
+                      constraints:
+                          nullable: false

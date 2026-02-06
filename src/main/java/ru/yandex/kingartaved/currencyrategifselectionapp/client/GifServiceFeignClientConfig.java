@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 public class GifServiceFeignClientConfig {
     @Value("${external-giphy.api-key}")
     private String apiKey;
+    @Value("${external-giphy.search-limit}")
+    private String limit;
 
     /**
      * Автоматически добавляет API-ключ ко всем запросам.
@@ -19,6 +21,7 @@ public class GifServiceFeignClientConfig {
     public RequestInterceptor feignRequestInterceptor() {
         return requestTemplate -> {
             requestTemplate.query("api_key", apiKey);
+            requestTemplate.query("limit", limit);
         };
     }
 
@@ -41,6 +44,6 @@ public class GifServiceFeignClientConfig {
                 1000,
                 3
         );
-    } //todo: уточнить логику работы, проверить.
+    }
 
 }

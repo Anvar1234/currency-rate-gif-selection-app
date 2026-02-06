@@ -2,13 +2,30 @@ spring:
   application:
     name: currency-rate-gif-selection-app
 
+spring.datasource:
+  url: jdbc:postgresql://localhost:5437/postgres # todo: пробросить порт для докер
+  username: postgres
+  password: ${POSTGRES_PASSWORD} # todo: задать в Run Configuration: r...
+#  driver-class-name: org.postgresql.Driver
+
+spring.liquibase:
+  change-log: classpath:/db/changelog/changelog-master.yml
+  enabled: true
+
+spring.jpa:
+  hibernate.ddl-auto: update
+  show-sql: true
+
 external-giphy:
   api-key: ${GIPHY_API_KEY} # задать в Run Configuration: sD79...
-  url: https://api.giphy.com/v1/gifs/search # todo: заменить на путь рандома.
+  url: https://api.giphy.com/v1/gifs/search
   search-word:
     positive-rate: rich
     negative-rate: broke
+  search-limit: 100
 
 external-exchangerate:
-  url: https://v6.exchangerate-api.com/v6/${EXCHANGERATE_API_KEY}/latest/USD # todo: задать в Run Configuration: eafb...
+  url: https://v6.exchangerate-api.com/v6/${EXCHANGERATE_API_KEY}/latest # todo: задать в Run Configuration: eafb...
 
+# todo: добавить в ликуибаз преКондишн! Если таблица есть - не пересоздавать.
+# todo: http://localhost:8080/api/v1/gifs?base_currency=USD&currency=RUB

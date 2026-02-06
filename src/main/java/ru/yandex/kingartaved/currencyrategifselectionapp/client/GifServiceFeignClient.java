@@ -2,7 +2,8 @@ package ru.yandex.kingartaved.currencyrategifselectionapp.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import ru.yandex.kingartaved.currencyrategifselectionapp.dto.GifDto;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.GifSearchResponseDto;
 
 @FeignClient(
         name = "gif-service",
@@ -12,5 +13,6 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.dto.GifDto;
 public interface GifServiceFeignClient {
 
     @GetMapping()
-    GifDto getRandomGif(String tag);
+    GifSearchResponseDto getGifData(@RequestParam("q") String searchWord);
+
 }

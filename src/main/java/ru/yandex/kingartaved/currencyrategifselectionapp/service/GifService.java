@@ -3,8 +3,12 @@ package ru.yandex.kingartaved.currencyrategifselectionapp.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.yandex.kingartaved.currencyrategifselectionapp.client.GifServiceFeignClient;
-import ru.yandex.kingartaved.currencyrategifselectionapp.client.RateServiceFeignClient;
+import ru.yandex.kingartaved.currencyrategifselectionapp.dto.GifDto;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -14,17 +18,23 @@ public class GifService {
     @Value("${external-giphy.search-word.negative-rate}")
     private String negativeRateSearchWord;
 
-    private Double currentRate; // todo: получаем из сервиса exchangerate-api
-    private Double yesterdaysRate; // todo: получаем из БД
+    private final Map<String, List<GifDto>> cache = new ConcurrentHashMap<>();
 
-    private final RateServiceFeignClient rateServiceFeignClient;
-    private final GifServiceFeignClient gifServiceFeignClient;
+    private final GifSearchService gifSearchService;
+    private final CurrencyRateService currencyRateService;
 
-    public String getGifUrl() {
-        return currentRate > yesterdaysRate ?
-                gifServiceFeignClient.getRandomGif(positiveRateSearchWord).getUrl() :
-                gifServiceFeignClient.getRandomGif(negativeRateSearchWord).getUrl();
-
+    public String getGifsUrl(String baseCurrency, String currency) {
+        return getRandomGif(currencyRateService.
+                isRateIncreased(baseCurrency, currency)).
+                getUrl();
     }
 
+    public GifDto getRandomGif(boolean isRateIncreased) {
+        String searchWord = isRateIncreased ? positiveRateSearchWord : negativeRateSearchWord;
+        List<GifDto> gifs = gifSearchService.getGifsForWord(searchWord);
+
+        return gifs.get(new Random().nextInt(gifs.size()));
+    }
 }
+
+
