@@ -23,5 +23,6 @@ public interface CurrencyRateRepository extends JpaRepository<CurrencyRateEntity
     Optional<CurrencyRateEntity> findLatestCurrencyRateByBaseCurrencyAndCurrencyAndDate(
             @Param("baseCurrency") String baseCurrency,
             @Param("currency") String currency,
-            @Param("date") LocalDateTime date);
+            @Param("date") LocalDateTime date
+    );
 }

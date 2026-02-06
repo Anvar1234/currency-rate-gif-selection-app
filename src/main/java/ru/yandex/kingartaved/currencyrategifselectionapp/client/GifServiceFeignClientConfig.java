@@ -7,15 +7,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Конфигурация Feign-клиента для взаимодействия с внешним API Giphy.
+ */
 @Configuration
 public class GifServiceFeignClientConfig {
+
     @Value("${external-giphy.api-key}")
     private String apiKey;
     @Value("${external-giphy.search-limit}")
     private String limit;
 
     /**
-     * Автоматически добавляет API-ключ ко всем запросам.
+     * Автоматически добавляет API-ключ и лимит ко всем запросам.
      */
     @Bean
     public RequestInterceptor feignRequestInterceptor() {

@@ -5,8 +5,11 @@ import lombok.Data;
 
 @Data
 public class GifDto {
+
     private String type;
+
     private String id;
+
     private String url;
 
     @JsonProperty("bitly_url")

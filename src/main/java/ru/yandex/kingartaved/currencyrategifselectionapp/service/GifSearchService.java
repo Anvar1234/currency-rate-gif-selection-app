@@ -10,6 +10,9 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.exception.GifNotFoundEx
 
 import java.util.List;
 
+/**
+ * Вспомогательный сервис приложения для поиска GIF по ключевому слову.
+ */
 @Service
 @RequiredArgsConstructor
 public class GifSearchService {

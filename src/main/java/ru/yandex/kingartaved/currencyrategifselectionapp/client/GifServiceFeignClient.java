@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.GifSearchResponseDto;
 
+/**
+ * Feign клиент для работы с внешним сервисом Giphy.
+ */
 @FeignClient(
         name = "gif-service",
         url = "${external-giphy.url}",

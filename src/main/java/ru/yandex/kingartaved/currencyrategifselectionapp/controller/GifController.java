@@ -14,6 +14,9 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.service.GifService;
 
 import java.io.IOException;
 
+/**
+ * Основной контроллер приложения.
+ */
 @RestController
 @RequestMapping("api/v1/gifs")
 @RequiredArgsConstructor
@@ -25,9 +28,9 @@ public class GifController {
     @Operation(
             summary = "Получить GIF по динамике курса валют",
             description = """
-                    Возвращает позитивную гифку, если курс выбранной валюты к базовой валюте 
-                    выше, чем в предыдущий рабочий день, и негативную - если ниже или данные 
-                    за предыдущий день отсутствуют.
+                    Возвращает позитивную гифку, если курс выбранной валюты к базовой валюте
+                    выше, чем предыдущий ближайший из БД, и негативную - если ниже или данные
+                    за предыдущее время отсутствуют.
                     
                     Пример запроса: `/api/v1/gifs?base_currency=USD&currency=EUR`
                     

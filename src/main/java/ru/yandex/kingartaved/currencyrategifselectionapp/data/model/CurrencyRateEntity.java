@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "currency_rate")
 @Data
-@NoArgsConstructor //для JPA (Hibarnate)
-@AllArgsConstructor //для разработчика
-@Builder //чтобы собрать в сервисе (id будет null)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CurrencyRateEntity {
 
     @Id
@@ -27,7 +27,7 @@ public class CurrencyRateEntity {
     private String baseCurrency; //базовая валюта
 
     @Column(name = "currency", nullable = false)
-    private String currency; //валюта сравнения к USD
+    private String currency; //валюта сравнения к базовой валюте
 
     @Column(name = "rate", nullable = false, precision = 10, scale = 4)
     private BigDecimal rate; //курс к базовой валюте

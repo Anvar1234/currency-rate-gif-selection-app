@@ -3,9 +3,9 @@ spring:
     name: currency-rate-gif-selection-app
 
 spring.datasource:
-  url: jdbc:postgresql://localhost:5437/postgres # todo: пробросить порт для докер
+  url: jdbc:postgresql://localhost:5437/postgres
   username: postgres
-  password: ${POSTGRES_PASSWORD} # todo: задать в Run Configuration: r...
+  password: ${POSTGRES_PASSWORD} # задать в Run Configuration: r...
 #  driver-class-name: org.postgresql.Driver
 
 spring.liquibase:
@@ -22,10 +22,7 @@ external-giphy:
   search-word:
     positive-rate: rich
     negative-rate: broke
-  search-limit: 100
+  search-limit: 100 # Лимит на количество гифок, которые можно получить за один запрос.
 
 external-exchangerate:
-  url: https://v6.exchangerate-api.com/v6/${EXCHANGERATE_API_KEY}/latest # todo: задать в Run Configuration: eafb...
-
-# todo: добавить в ликуибаз преКондишн! Если таблица есть - не пересоздавать.
-# todo: http://localhost:8080/api/v1/gifs?base_currency=USD&currency=RUB
+  url: https://v6.exchangerate-api.com/v6/${EXCHANGERATE_API_KEY}/latest # задать в Run Configuration: eafb...
