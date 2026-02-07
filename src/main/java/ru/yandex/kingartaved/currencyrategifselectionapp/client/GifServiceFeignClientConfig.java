@@ -3,6 +3,7 @@ package ru.yandex.kingartaved.currencyrategifselectionapp.client;
 import feign.RequestInterceptor;
 import feign.Retryer;
 import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * Конфигурация Feign-клиента для взаимодействия с внешним API Giphy.
  */
 @Configuration
+@Slf4j
 public class GifServiceFeignClientConfig {
 
     @Value("${external-giphy.api-key}")
@@ -23,6 +25,8 @@ public class GifServiceFeignClientConfig {
      */
     @Bean
     public RequestInterceptor feignRequestInterceptor() {
+        log.info("Вызван перехватчик запросов в GifServiceFeignClientConfig");
+
         return requestTemplate -> {
             requestTemplate.query("api_key", apiKey);
             requestTemplate.query("limit", limit);
@@ -43,6 +47,8 @@ public class GifServiceFeignClientConfig {
 
     @Bean
     public Retryer retryer() {
+        log.info("Вызван метод retryer() в GifServiceFeignClientConfig");
+
         return new Retryer.Default(
                 100,
                 1000,

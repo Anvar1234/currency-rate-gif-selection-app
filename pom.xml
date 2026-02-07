@@ -82,7 +82,7 @@
         </dependency>
 
 
-        <!-- Миграции - ДЛЯ Spring Boot 3.x используем liquibase-core -->
+        <!-- Миграции - ДЛЯ Spring Boot 3.x используем liquibase-core, а не стартеры -->
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>

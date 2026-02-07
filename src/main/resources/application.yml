@@ -29,24 +29,16 @@ external-exchangerate:
 
 logging:
   level:
-    liquibase: DEBUG
+    root: INFO
+    ru.yandex.kingartaved.currencyrategifselectionapp.data.repository: DEBUG
+    ru.yandex.kingartaved.currencyrategifselectionapp.service: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
 
-debug: true
+#feign:
+#  client:
+#    config:
+#      default:  # Для всех Feign клиентов
+#        loggerLevel: full
 
-#spring:
-#  application:
-#    name: currency-rate-gif-selection-app
-#
-#spring.datasource:
-#  url: jdbc:postgresql://localhost:5437/postgres
-#  username: postgres
-#  password: ${POSTGRES_PASSWORD} # задать в Run Configuration: r...
-##  driver-class-name: org.postgresql.Driver
-#
-#spring.liquibase:
-#  change-log: classpath:/db/changelog/changelog-master.yml
-#  enabled: true
-#
-#spring.jpa:
-#  hibernate.ddl-auto: none
-#  show-sql: true
+#debug: true

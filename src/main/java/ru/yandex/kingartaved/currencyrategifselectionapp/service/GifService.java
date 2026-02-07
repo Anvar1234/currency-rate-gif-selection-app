@@ -2,6 +2,7 @@ package ru.yandex.kingartaved.currencyrategifselectionapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.model.CurrencyRateEntity;
@@ -17,6 +18,7 @@ import java.util.Random;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GifService {
 
     @Value("${external-giphy.search-word.positive-rate}")
@@ -32,17 +34,19 @@ public class GifService {
     private final CurrencyRateRepository currencyRateRepository;
 
     public String getGifsUrl(String baseCurrency, String currency) {
+        log.info("Вызов метода getGifsUrl() в классе GifService. Получение URL гифки.");
 
         return getRandomGif(isRateIncreased(baseCurrency, currency)).getUrl();
     }
 
     private GifDto getRandomGif(boolean isRateIncreased) {
+        log.info("Вызов метода getRandomGif() в классе GifService. Получение случайной гифки.");
+
         String searchWord = isRateIncreased ?
                 positiveRateSearchWord :
                 negativeRateSearchWord;
 
         List<GifDto> gifs = gifSearchService.getGifsForWord(searchWord);
-        System.out.println("Размер списка: " + gifs.size());
         return gifs.get(new Random().nextInt(gifs.size()));
     }
 
@@ -50,9 +54,11 @@ public class GifService {
             String incomingBaseCurrency,
             String incomingCurrency
     ) {
+        log.info("Вызов метода isRateIncreased() в классе GifService. Проверка на увеличение курса валюты.");
+
         // Получаем текущий и предыдущий курсы валют
         CurrencyRateEntity actualCurrencyRateEntity =
-                currencyRateDeliveryService.getActualCurrencyRateEntity(
+                currencyRateDeliveryService.getAndSaveActualCurrencyRateEntity(
                         incomingBaseCurrency, incomingCurrency
                 );
 
@@ -63,7 +69,7 @@ public class GifService {
                                 incomingCurrency,
                                 actualCurrencyRateEntity.getDate().minusSeconds(1) // минус 1 секунда для поиска ПРЕДЫДУЩЕЙ записи
                         ).orElseThrow(() ->
-                                new EntityNotFoundException("Не найден предыдущий курс указанных валют."));
+                                new EntityNotFoundException("Не найден предыдущий курс валют."));
 
         // Сравниваем курсы
         BigDecimal actualRate = actualCurrencyRateEntity.getRate();
