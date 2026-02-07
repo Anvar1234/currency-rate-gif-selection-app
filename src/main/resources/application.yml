@@ -2,19 +2,19 @@ spring:
   application:
     name: currency-rate-gif-selection-app
 
-spring.datasource:
-  url: jdbc:postgresql://localhost:5437/postgres
-  username: postgres
-  password: ${POSTGRES_PASSWORD} # задать в Run Configuration: r...
-#  driver-class-name: org.postgresql.Driver
+  datasource:
+    url: jdbc:postgresql://localhost:5437/postgres
+    username: postgres
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
-spring.liquibase:
-  change-log: classpath:/db/changelog/changelog-master.yml
-  enabled: true
+  liquibase:
+    change-log: classpath:/db/changelog/changelog-master.yml
+    enabled: true
 
-spring.jpa:
-  hibernate.ddl-auto: validate
-  show-sql: true
+  jpa:
+    hibernate.ddl-auto: none
+    show-sql: true
 
 external-giphy:
   api-key: ${GIPHY_API_KEY} # задать в Run Configuration: sD79...
@@ -26,3 +26,27 @@ external-giphy:
 
 external-exchangerate:
   url: https://v6.exchangerate-api.com/v6/${EXCHANGERATE_API_KEY}/latest # задать в Run Configuration: eafb...
+
+logging:
+  level:
+    liquibase: DEBUG
+
+debug: true
+
+#spring:
+#  application:
+#    name: currency-rate-gif-selection-app
+#
+#spring.datasource:
+#  url: jdbc:postgresql://localhost:5437/postgres
+#  username: postgres
+#  password: ${POSTGRES_PASSWORD} # задать в Run Configuration: r...
+##  driver-class-name: org.postgresql.Driver
+#
+#spring.liquibase:
+#  change-log: classpath:/db/changelog/changelog-master.yml
+#  enabled: true
+#
+#spring.jpa:
+#  hibernate.ddl-auto: none
+#  show-sql: true

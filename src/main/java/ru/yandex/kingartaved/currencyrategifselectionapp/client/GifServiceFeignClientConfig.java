@@ -49,5 +49,4 @@ public class GifServiceFeignClientConfig {
                 3
         );
     }
-
 }
