@@ -10,9 +10,10 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.CurrencyRa
  */
 @FeignClient(
         name = "rate-service",
-        url = "${external-exchangerate.url}"
+        url = "${external-exchangerate.url}",
+        configuration = CurrencyRateServiceFeignClientConfig.class
 )
-public interface CurrencyRateServiceFeignClient {
+public interface ExchangeRateServiceFeignClient {
 
     @GetMapping("/{base_currency}")
     CurrencyRateResponseDto getRate(@PathVariable("base_currency") String baseCurrency);

@@ -32,13 +32,8 @@ logging:
     root: INFO
     ru.yandex.kingartaved.currencyrategifselectionapp.data.repository: DEBUG
     ru.yandex.kingartaved.currencyrategifselectionapp.service: DEBUG
+    ru.yandex.kingartaved.currencyrategifselectionapp.client: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
-
-#feign:
-#  client:
-#    config:
-#      default:  # Для всех Feign клиентов
-#        loggerLevel: full
 
 #debug: true

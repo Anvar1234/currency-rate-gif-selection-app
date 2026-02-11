@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,10 +21,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("api/v1/gifs")
 @RequiredArgsConstructor
+@Slf4j
 public class GifController {
     private final GifService gifService;
-
-    private final Logger logger = LoggerFactory.getLogger(GifController.class);
 
     @Operation(
             summary = "Получить GIF по динамике курса валют",
@@ -53,10 +53,11 @@ public class GifController {
             @Parameter(description = "Целевая валюта", example = "EUR")
             @RequestParam(value = "currency", defaultValue = "RUB") String currency
     ) throws IOException {
-        logger.info("Вызван метод: getGif() с параметрами: {} и {}", baseCurrency, currency + " в контроллере.");
+
+        log.info("Вызван метод: getGif() с параметрами: {} и {}", baseCurrency, currency + " в контроллере.");
         String gifUrl = gifService.getGifsUrl(baseCurrency, currency);
 
-        logger.info("Попытка редиректа в контроллере на gifUrl: {}", gifUrl);
+        log.info("Попытка редиректа в контроллере на gifUrl: {}", gifUrl);
         response.sendRedirect(gifUrl);
         return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).build();
     }

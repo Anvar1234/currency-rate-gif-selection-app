@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.kingartaved.currencyrategifselectionapp.client.CurrencyRateServiceFeignClient;
+import ru.yandex.kingartaved.currencyrategifselectionapp.client.ExchangeRateServiceFeignClient;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.model.CurrencyRateEntity;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.repository.CurrencyRateRepository;
 import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.CurrencyRateResponseDto;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class CurrencyRateDeliveryService {
 
-    private final CurrencyRateServiceFeignClient currencyRateServiceFeignClient;
+    private final ExchangeRateServiceFeignClient exchangeRateServiceFeignClient;
 
     private final CurrencyRateRepository currencyRateRepository;
 
@@ -61,13 +61,13 @@ public class CurrencyRateDeliveryService {
     private BigDecimal fetchCurrencyRate(String incomingBaseCurrency, String incomingCurrency) {
         log.debug("Получение курса для валют: {}/{}", incomingBaseCurrency, incomingCurrency);
 
-        CurrencyRateResponseDto currencyRateResponseDto = currencyRateServiceFeignClient.
+        CurrencyRateResponseDto currencyRateResponseDto = exchangeRateServiceFeignClient.
                 getRate(incomingBaseCurrency);
 
         if (currencyRateResponseDto == null ||
                 currencyRateResponseDto.getConversionRates() == null ||
-                currencyRateResponseDto.getConversionRates().isEmpty()
-        ) {
+                currencyRateResponseDto.getConversionRates().isEmpty()) {
+
             log.error("Сервис курсов валют вернул некорректный ответ для валют: {}/{}",
                     incomingBaseCurrency,
                     incomingCurrency);

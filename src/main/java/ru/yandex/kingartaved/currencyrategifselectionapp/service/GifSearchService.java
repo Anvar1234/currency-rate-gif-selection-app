@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import ru.yandex.kingartaved.currencyrategifselectionapp.client.GifServiceFeignClient;
+import ru.yandex.kingartaved.currencyrategifselectionapp.client.GiphyServiceFeignClient;
 import ru.yandex.kingartaved.currencyrategifselectionapp.dto.GifDto;
 import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.GifSearchResponseDto;
 import ru.yandex.kingartaved.currencyrategifselectionapp.exception.GifNotFoundException;
@@ -20,14 +20,13 @@ import java.util.List;
 @Slf4j
 public class GifSearchService {
 
-    private final GifServiceFeignClient gifServiceFeignClient;
+    private final GiphyServiceFeignClient giphyServiceFeignClient;
 
     @Cacheable(value = "gifs", key = "#searchWord")
     public List<GifDto> getGifsForWord(String searchWord) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!Вызов метода getGifsForWord в классе GifSearchService!!!!!!!!!!!!!!!!");
         log.debug("Вызов метода getGifsForWord в классе GifSearchService. Получение списка GIF для слова: {}", searchWord);
 
-        GifSearchResponseDto responseDto = gifServiceFeignClient.getGifData(searchWord);
+        GifSearchResponseDto responseDto = giphyServiceFeignClient.getGifData(searchWord);
 
         if (responseDto == null || responseDto.getData() == null || responseDto.getData().isEmpty()) {
             throw new GifNotFoundException("Не найдено GIF для слова: " + searchWord);

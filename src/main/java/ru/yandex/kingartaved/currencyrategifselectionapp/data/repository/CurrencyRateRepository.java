@@ -9,6 +9,11 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.data.model.CurrencyRate
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+//todo: как реализовать логер для репозитория?
+
+
+
+
 @Repository
 public interface CurrencyRateRepository extends JpaRepository<CurrencyRateEntity, Long> {
 

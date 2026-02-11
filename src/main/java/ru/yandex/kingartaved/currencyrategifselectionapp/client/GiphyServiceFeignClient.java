@@ -9,13 +9,12 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.GifSearchR
  * Feign клиент для работы с внешним сервисом Giphy.
  */
 @FeignClient(
-        name = "gif-service",
+        name = "giphy-service",
         url = "${external-giphy.url}",
         configuration = GifServiceFeignClientConfig.class
 )
-public interface GifServiceFeignClient {
+public interface GiphyServiceFeignClient {
 
     @GetMapping()
     GifSearchResponseDto getGifData(@RequestParam("q") String searchWord);
-
 }
