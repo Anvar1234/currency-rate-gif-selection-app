@@ -58,7 +58,7 @@ public class GifService {
 
         // Получаем текущий и предыдущий курсы валют
         CurrencyRateEntity actualCurrencyRateEntity =
-                currencyRateDeliveryService.getAndSaveActualCurrencyRateEntity(
+                currencyRateDeliveryService.getActualCurrencyRateEntity(
                         incomingBaseCurrency, incomingCurrency
                 );
 

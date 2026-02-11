@@ -26,7 +26,7 @@ public class CurrencyRateDeliveryService {
     private final CurrencyRateRepository currencyRateRepository;
 
     @Transactional
-    public CurrencyRateEntity getAndSaveActualCurrencyRateEntity(
+    public CurrencyRateEntity getActualCurrencyRateEntity(
             String incomingBaseCurrency,
             String incomingCurrency
     ) {
@@ -35,17 +35,7 @@ public class CurrencyRateDeliveryService {
                 incomingCurrency
         );
 
-        incomingBaseCurrency = incomingBaseCurrency.toUpperCase();
-        incomingCurrency = incomingCurrency.toUpperCase();
-
         BigDecimal actualRate = fetchCurrencyRate(incomingBaseCurrency, incomingCurrency);
-
-        if (actualRate == null) {
-            log.debug("Не удалось получить курс для валют: {}/{}", incomingBaseCurrency, incomingCurrency);
-
-            throw new CurrencyRateNotFoundException(String.format("Курс для валют %s/%s не найден",
-                    incomingBaseCurrency, incomingCurrency));
-        }
 
         CurrencyRateEntity actualCurrencyRateEntity = buildCurrencyRateEntity(
                 incomingBaseCurrency,
@@ -53,36 +43,47 @@ public class CurrencyRateDeliveryService {
                 actualRate
         );
 
-        saveCurrencyRateEntity(actualCurrencyRateEntity);
-
-        return actualCurrencyRateEntity;
+        return saveCurrencyRateEntity(actualCurrencyRateEntity);
     }
 
     private BigDecimal fetchCurrencyRate(String incomingBaseCurrency, String incomingCurrency) {
         log.debug("Получение курса для валют: {}/{}", incomingBaseCurrency, incomingCurrency);
 
+        incomingBaseCurrency = incomingBaseCurrency.toUpperCase();
+        incomingCurrency = incomingCurrency.toUpperCase();
+
         CurrencyRateResponseDto currencyRateResponseDto = exchangeRateServiceFeignClient.
                 getRate(incomingBaseCurrency);
 
-        if (currencyRateResponseDto == null ||
-                currencyRateResponseDto.getConversionRates() == null ||
-                currencyRateResponseDto.getConversionRates().isEmpty()) {
+        if (currencyRateResponseDto == null || currencyRateResponseDto.getConversionRates() == null) {
 
             log.error("Сервис курсов валют вернул некорректный ответ для валют: {}/{}",
                     incomingBaseCurrency,
-                    incomingCurrency);
+                    incomingCurrency
+            );
 
             throw new CurrencyRateNotFoundException(
-                    String.format("Сервис курсов валют вернул некорректный ответ для валют: %s/%s",
-                            incomingBaseCurrency,
-                            incomingCurrency
-                    )
+                    String.format("Не найден курс для валют: %s/%s", incomingBaseCurrency, incomingCurrency)
             );
         }
-        return currencyRateResponseDto.getConversionRates().get(incomingCurrency);
+
+        BigDecimal actualRate = currencyRateResponseDto.getConversionRates().get(incomingCurrency);
+
+        if (actualRate == null) {
+            log.error("Курс для валюты {} не найден в ответе от сервиса курсов валют", incomingCurrency);
+
+            throw new CurrencyRateNotFoundException(
+                    String.format("Курс для валюты %s не найден", incomingCurrency));
+        }
+
+        return actualRate;
     }
 
-    private CurrencyRateEntity buildCurrencyRateEntity(String incomingBaseCurrency, String incomingCurrency, BigDecimal actualRate) {
+    private CurrencyRateEntity buildCurrencyRateEntity(
+            String incomingBaseCurrency,
+            String incomingCurrency,
+            BigDecimal actualRate
+    ) {
 
         log.debug("Формирование сущности для валют: {}/{}", incomingBaseCurrency, incomingCurrency);
 
@@ -94,10 +95,10 @@ public class CurrencyRateDeliveryService {
                 build();
     }
 
-    private void saveCurrencyRateEntity(CurrencyRateEntity currencyRateEntity) {
+    private CurrencyRateEntity saveCurrencyRateEntity(CurrencyRateEntity currencyRateEntity) {
 
         log.debug("Сохранение сущности {} в БД", currencyRateEntity);
 
-        currencyRateRepository.save(currencyRateEntity);
+        return currencyRateRepository.save(currencyRateEntity);
     }
 }
