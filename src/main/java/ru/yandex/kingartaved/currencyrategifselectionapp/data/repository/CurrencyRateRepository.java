@@ -9,11 +9,6 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.data.model.CurrencyRate
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-//todo: как реализовать логер для репозитория?
-
-
-
-
 @Repository
 public interface CurrencyRateRepository extends JpaRepository<CurrencyRateEntity, Long> {
 
@@ -21,7 +16,7 @@ public interface CurrencyRateRepository extends JpaRepository<CurrencyRateEntity
             SELECT r FROM CurrencyRateEntity r
             WHERE r.baseCurrency = :baseCurrency
             AND r.currency = :currency
-            AND r.date <= :date
+            AND r.date < :date
             ORDER BY r.date DESC
             LIMIT 1
             """)

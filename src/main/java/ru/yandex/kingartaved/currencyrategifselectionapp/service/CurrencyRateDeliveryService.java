@@ -95,7 +95,9 @@ public class CurrencyRateDeliveryService {
     }
 
     private void saveCurrencyRateEntity(CurrencyRateEntity currencyRateEntity) {
+
         log.debug("Сохранение сущности {} в БД", currencyRateEntity);
+
         currencyRateRepository.save(currencyRateEntity);
     }
 }

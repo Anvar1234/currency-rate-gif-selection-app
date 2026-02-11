@@ -67,8 +67,8 @@ public class GifService {
                         findLatestCurrencyRateByBaseCurrencyAndCurrencyAndDate(
                                 incomingBaseCurrency,
                                 incomingCurrency,
-                                actualCurrencyRateEntity.getDate().minusSeconds(1) // минус 1 секунда для поиска ПРЕДЫДУЩЕЙ записи
-                        ).orElseThrow(() ->
+                                actualCurrencyRateEntity.getDate()).
+                        orElseThrow(() ->
                                 new EntityNotFoundException("Не найден предыдущий курс валют."));
 
         // Сравниваем курсы

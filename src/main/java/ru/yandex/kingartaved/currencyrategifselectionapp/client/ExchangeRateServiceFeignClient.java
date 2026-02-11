@@ -11,7 +11,7 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.CurrencyRa
 @FeignClient(
         name = "rate-service",
         url = "${external-exchangerate.url}",
-        configuration = CurrencyRateServiceFeignClientConfig.class
+        configuration = ExchangeRateServiceFeignClientConfig.class
 )
 public interface ExchangeRateServiceFeignClient {
 

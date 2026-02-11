@@ -71,7 +71,6 @@ public class GifServiceFeignClientConfig {
 
     /**
      * Уровень логирования для Feign-клиента GiphyServiceFeignClient.
-     * @return
      */
     @Bean
     Logger.Level giphyServiceFeignLoggerLevel() {
