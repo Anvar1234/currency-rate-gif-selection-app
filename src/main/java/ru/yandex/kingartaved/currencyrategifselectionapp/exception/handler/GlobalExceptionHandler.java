@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
         log.error("Обработка EntityNotFoundException в GlobalExceptionHandler", e);
 
         var errorDto = new ErrorResponseDto(
-                "Entity в БД не найдена",
+                "Ошибка получения данных",
                 e.getMessage(),
                 LocalDateTime.now()
         );

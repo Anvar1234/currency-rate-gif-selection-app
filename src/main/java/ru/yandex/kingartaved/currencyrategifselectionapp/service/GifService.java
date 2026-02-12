@@ -69,7 +69,7 @@ public class GifService {
                                 incomingCurrency,
                                 actualCurrencyRateEntity.getDate()).
                         orElseThrow(() ->
-                                new EntityNotFoundException("Не найден предыдущий курс валют."));
+                                new EntityNotFoundException("Не найден предыдущий курс валют в БД."));
 
         // Сравниваем курсы
         BigDecimal actualRate = actualCurrencyRateEntity.getRate();

@@ -8,7 +8,7 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.client.ExchangeRateServ
 @SpringBootTest
 public class CurrencyRateDeliveryServiceTest {
 
-    @MockBean  // <- Создаём мок вместо реального Feign-клиента
+    @MockBean
     private ExchangeRateServiceFeignClient exchangeRateServiceFeignClient;
 
     @Autowired
