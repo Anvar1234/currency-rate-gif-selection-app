@@ -29,6 +29,7 @@ public class GifSearchServiceTest {
      */
     @Test
     void getGifsForWord_callOnceForWord_whenCalledTwice() {
+
         // given
         String searchWord = "test";
         GifSearchResponseDto mockResponse = new GifSearchResponseDto();
@@ -50,6 +51,7 @@ public class GifSearchServiceTest {
      */
     @Test
     void getGifsForWord_returnGifList_whenGiphyServiceReturnsNonEmptyResponse() {
+
         //given
         GifDto gif1 = new GifDto();
         GifDto gif2 = new GifDto();

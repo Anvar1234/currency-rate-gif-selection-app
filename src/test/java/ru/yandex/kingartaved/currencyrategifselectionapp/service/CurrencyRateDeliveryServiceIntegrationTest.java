@@ -54,6 +54,7 @@ public class CurrencyRateDeliveryServiceIntegrationTest {
 
     @Test
     void getActualCurrencyRateEntity_success() {
+
         // given
         String baseCurrency = "USD";
         String currency = "RUB";
