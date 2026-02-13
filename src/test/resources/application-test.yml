@@ -8,8 +8,12 @@ spring:
 #    password:
 #    driver-class-name: org.h2.Driver
 
+#  liquibase:
+#    enabled: false  # Отключаем Liquibase для тестов
+
   liquibase:
-    enabled: false  # Отключаем Liquibase для тестов
+    enabled: true
+    change-log: classpath:/db/changelog/changelog-master.yml
 
   jpa:
     hibernate.ddl-auto: none
@@ -18,16 +22,11 @@ spring:
 
 external-giphy:
   api-key: test-giphy-key
-  url: http://dont-call-this-in-tests.com
+  url: http://dont-call-in-tests.com
   search-word:
     positive-rate: rich
     negative-rate: broke
   search-limit: 25
 
 external-exchangerate:
-  url: http://dont-call-this-in-tests.com
-
-#logging:
-#  level:
-#    root: WARN
-#    ru.yandex.kingartaved.currencyrategifselectionapp: DEBUG
+  url: http://dont-call-in-tests.com

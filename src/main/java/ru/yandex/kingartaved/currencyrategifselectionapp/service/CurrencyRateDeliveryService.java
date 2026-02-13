@@ -46,7 +46,7 @@ public class CurrencyRateDeliveryService {
         return saveCurrencyRateEntity(actualCurrencyRateEntity);
     }
 
-    private BigDecimal fetchCurrencyRate(String incomingBaseCurrency, String incomingCurrency) {
+    protected BigDecimal fetchCurrencyRate(String incomingBaseCurrency, String incomingCurrency) {
         log.debug("Получение курса для валют: {}/{}", incomingBaseCurrency, incomingCurrency);
 
         incomingBaseCurrency = incomingBaseCurrency.toUpperCase();
@@ -79,7 +79,7 @@ public class CurrencyRateDeliveryService {
         return actualRate;
     }
 
-    private CurrencyRateEntity buildCurrencyRateEntity(
+    protected CurrencyRateEntity buildCurrencyRateEntity(
             String incomingBaseCurrency,
             String incomingCurrency,
             BigDecimal actualRate
@@ -95,9 +95,9 @@ public class CurrencyRateDeliveryService {
                 build();
     }
 
-    private CurrencyRateEntity saveCurrencyRateEntity(CurrencyRateEntity currencyRateEntity) {
+    protected CurrencyRateEntity saveCurrencyRateEntity(CurrencyRateEntity currencyRateEntity) {
 
-        log.debug("Сохранение сущности {} в БД", currencyRateEntity);
+        log.debug("Сохранение сущности в БД: {}", currencyRateEntity);
 
         return currencyRateRepository.save(currencyRateEntity);
     }

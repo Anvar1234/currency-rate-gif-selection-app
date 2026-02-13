@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest // Тяжелее, но нужно для проверки кэширования
 @ActiveProfiles("test")
 public class GifSearchServiceTest {
 
@@ -28,7 +28,7 @@ public class GifSearchServiceTest {
      * Тестирование кэширования
      */
     @Test
-    void getGifsForWord_shouldOnlyWorkOnceForSameWord_whenCalledTwice() {
+    void getGifsForWord_callOnceForWord_whenCalledTwice() {
         // given
         String searchWord = "test";
         GifSearchResponseDto mockResponse = new GifSearchResponseDto();
@@ -49,7 +49,7 @@ public class GifSearchServiceTest {
      * Тестирование получения списка GIF-ов
      */
     @Test
-    void getGifsForWord_shouldReturnGifList_whenGiphyServiceReturnsNonEmptyResponse() {
+    void getGifsForWord_returnGifList_whenGiphyServiceReturnsNonEmptyResponse() {
         //given
         GifDto gif1 = new GifDto();
         GifDto gif2 = new GifDto();
@@ -65,6 +65,7 @@ public class GifSearchServiceTest {
         //then
         assertThat(result).hasSize(2);
         assertThat(result).containsExactly(gif1, gif2);
+        verify(giphyServiceFeignClient, times(1)).getGifData("testSearchWord");
     }
 
 }
