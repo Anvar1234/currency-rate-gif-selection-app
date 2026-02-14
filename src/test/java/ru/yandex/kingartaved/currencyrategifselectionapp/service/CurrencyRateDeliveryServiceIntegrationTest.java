@@ -65,9 +65,65 @@ public class CurrencyRateDeliveryServiceIntegrationTest {
         this.expectedRate = new BigDecimal("97.50");
     }
 
+
     @Test
-    @DisplayName("Тестирование getActualCurrencyRateEntity с входящими в нижнем регистре валютами")
-    void getActualCurrencyRateEntity_currenciesAreWrittenInUppercase_whenCalledInLowerCase() {
+    @DisplayName("Должен выбросить исключение при получении null от внешнего сервиса")
+    void fetchCurrencyRate_shouldThrowException_whenResponseIsNull() {
+
+        // given
+        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(null);
+
+        // when
+        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
+
+        // then
+        assertThrows(CurrencyRateNotFoundException.class, action);
+
+        verify(repository, never()).save(any(CurrencyRateEntity.class));
+    }
+
+    @Test
+    @DisplayName("Должен выбросить исключение при отсутствии поля conversionRates в ответе")
+    void fetchCurrencyRate_shouldThrowException_whenConversionRatesIsNull() {
+
+        // given
+        CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
+        responseDto.setConversionRates(null);
+
+        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(responseDto);
+
+        // when
+        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
+
+        // then
+        assertThrows(CurrencyRateNotFoundException.class, action);
+
+        verify(repository, never()).save(any(CurrencyRateEntity.class));
+    }
+
+    @Test
+    @DisplayName("Должен выбросить исключение при отсутствии запрашиваемой валюты в мапе conversionRates")
+    void fetchCurrencyRate_shouldThrowException_whenCurrencyNotInResponse() {
+
+        // given
+        CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
+        Map<String, BigDecimal> conversionRates = Map.of("EUR", expectedRate);
+        responseDto.setConversionRates(conversionRates);
+
+        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(responseDto);
+
+        // when
+        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
+
+        // then
+        assertThrows(CurrencyRateNotFoundException.class, action);
+
+        verify(repository, never()).save(any(CurrencyRateEntity.class));
+    }
+
+    @Test
+    @DisplayName("Должен сохранить сущность с валютами в верхнем регистре при вызове с нижним регистром")
+    void getActualCurrencyRateEntity_shouldConvertToUpperCase_whenParamsInLowerCase() {
 
         // given
         String baseCurrencyInLowerCase = "usd";
@@ -95,63 +151,8 @@ public class CurrencyRateDeliveryServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("Тестирование fetchCurrencyRate при получении null в ответе от внешнего сервиса")
-    void fetchCurrencyRate_throwsException_whenResponseIsNull() {
-
-        // given
-        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(null);
-
-        // when
-        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
-
-        // then
-        assertThrows(CurrencyRateNotFoundException.class, action);
-
-        verify(repository, never()).save(any(CurrencyRateEntity.class));
-    }
-
-    @Test
-    @DisplayName("Тестирование fetchCurrencyRate при получении null в поле conversionRates")
-    void fetchCurrencyRate_throwsException_whenConversionRatesIsNull() {
-
-        // given
-        CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
-        responseDto.setConversionRates(null);
-
-        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(responseDto);
-
-        // when
-        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
-
-        // then
-        assertThrows(CurrencyRateNotFoundException.class, action);
-
-        verify(repository, never()).save(any(CurrencyRateEntity.class));
-    }
-
-    @Test
-    @DisplayName("Тестирование fetchCurrencyRate при отсутствии ключа (валюты) в мапе conversionRates")
-    void fetchCurrencyRate_throwsException_whenCurrencyNotInResponse() {
-
-        // given
-        CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
-        Map<String, BigDecimal> conversionRates = Map.of("EUR", expectedRate);
-        responseDto.setConversionRates(conversionRates);
-
-        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(responseDto);
-
-        // when
-        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
-
-        // then
-        assertThrows(CurrencyRateNotFoundException.class, action);
-
-        verify(repository, never()).save(any(CurrencyRateEntity.class));
-    }
-
-    @Test
-    @DisplayName("Тестирование fetchCurrencyRate при успешном получении курса валюты")
-    void getActualCurrencyRateEntity_success() {
+    @DisplayName("Должен успешно получить и сохранить курс валюты")
+    void getActualCurrencyRateEntity_shouldReturnSavedEntity_whenSuccessful() {
 
         // given
         CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto(); // для метода getRate
@@ -180,6 +181,5 @@ public class CurrencyRateDeliveryServiceIntegrationTest {
         verify(exchangeRateServiceFeignClient).getRates("USD");
         verify(repository).save(any(CurrencyRateEntity.class));
     }
-
 
 }
