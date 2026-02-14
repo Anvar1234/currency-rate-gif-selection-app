@@ -35,6 +35,9 @@ public class CurrencyRateDeliveryService {
                 incomingCurrency
         );
 
+        incomingBaseCurrency = incomingBaseCurrency.toUpperCase();
+        incomingCurrency = incomingCurrency.toUpperCase();
+
         BigDecimal actualRate = fetchCurrencyRate(incomingBaseCurrency, incomingCurrency);
 
         CurrencyRateEntity actualCurrencyRateEntity = buildCurrencyRateEntity(
@@ -49,15 +52,13 @@ public class CurrencyRateDeliveryService {
     protected BigDecimal fetchCurrencyRate(String incomingBaseCurrency, String incomingCurrency) {
         log.debug("Получение курса для валют: {}/{}", incomingBaseCurrency, incomingCurrency);
 
-        incomingBaseCurrency = incomingBaseCurrency.toUpperCase();
-        incomingCurrency = incomingCurrency.toUpperCase();
-
         CurrencyRateResponseDto currencyRateResponseDto = exchangeRateServiceFeignClient.
-                getRate(incomingBaseCurrency);
+                getRates(incomingBaseCurrency);
 
         if (currencyRateResponseDto == null || currencyRateResponseDto.getConversionRates() == null) {
 
-            log.error("Сервис курсов валют вернул некорректный ответ для валют: {}/{}",
+            log.error("Сервис курсов валют для {}/{} вернул null: " +
+                            "CurrencyRateResponseDto = null или currencyRateResponseDto.getConversionRates() = null",
                     incomingBaseCurrency,
                     incomingCurrency
             );

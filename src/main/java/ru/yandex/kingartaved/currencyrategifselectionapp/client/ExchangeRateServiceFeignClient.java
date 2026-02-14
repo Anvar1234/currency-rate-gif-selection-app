@@ -16,5 +16,5 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.CurrencyRa
 public interface ExchangeRateServiceFeignClient {
 
     @GetMapping("/{base_currency}")
-    CurrencyRateResponseDto getRate(@PathVariable("base_currency") String baseCurrency);
+    CurrencyRateResponseDto getRates(@PathVariable("base_currency") String baseCurrency);
 }

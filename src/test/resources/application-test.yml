@@ -2,9 +2,6 @@ spring:
   application:
     name: currency-rate-gif-selection-app-test
 
-#  liquibase:
-#    enabled: false  # Отключаем Liquibase для тестов
-
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/changelog-master.yml
