@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -32,8 +33,12 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 public class CurrencyRateDeliveryServiceTest {
 
+    @Value("${test-external-exchangerate.base-currency}")
     private String baseCurrency;
+
+    @Value("${test-external-exchangerate.target-currency}")
     private String currency;
+
     private BigDecimal expectedRate;
 
     @MockBean
@@ -60,8 +65,6 @@ public class CurrencyRateDeliveryServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.baseCurrency = "USD";
-        this.currency = "RUB";
         this.expectedRate = new BigDecimal("97.50");
     }
 

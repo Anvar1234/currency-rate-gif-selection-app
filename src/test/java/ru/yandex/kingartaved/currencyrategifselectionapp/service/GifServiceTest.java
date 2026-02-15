@@ -1,12 +1,11 @@
 package ru.yandex.kingartaved.currencyrategifselectionapp.service;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,12 +16,17 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.model.CurrencyRateEntity;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.repository.CurrencyRateRepository;
+import ru.yandex.kingartaved.currencyrategifselectionapp.dto.GifDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Testcontainers
@@ -30,9 +34,18 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 public class GifServiceTest {
 
+    @Value("${test-external-exchangerate.base-currency}")
     private String baseCurrency;
+
+    @Value("${test-external-exchangerate.target-currency}")
     private String currency;
-    private BigDecimal expectedRate;
+
+    @Value("${test-external-giphy.search-word.positive-rate}")
+    private String positiveRateSearchWord;
+
+    @Value("${test-external-giphy.search-word.negative-rate}")
+    private String negativeRateSearchWord;
+
 
     @MockBean
     private GifSearchService gifSearchService;
@@ -59,29 +72,24 @@ public class GifServiceTest {
         registry.add("spring.datasource.password", postgres::getPassword);
     }
 
-    @BeforeEach
-    void setUp() {
-        this.baseCurrency = "USD";
-        this.currency = "RUB";
-        this.expectedRate = new BigDecimal("97.50");
-    }
-
     @ParameterizedTest(name = "{0}")
     @CsvFileSource(
             resources = "/rates/isRateIncreased_higherAndLowerExchangeRates_cases.csv",
-            numLinesToSkip = 1)
+            numLinesToSkip = 1
+    )
     @DisplayName("Должен вернуть true, если курс возрос и false, если упал или равен предыдущему")
     void isRateIncreased_shouldReturnTrue_whenRateIncreased(
             String description,
+            BigDecimal actualRate,
             BigDecimal lastRate,
-            boolean expectedValid
+            boolean expectedRateIncreased
     ) {
 
         // given
         CurrencyRateEntity actualRateEntity = CurrencyRateEntity.builder()
                 .baseCurrency(baseCurrency)
                 .currency(currency)
-                .rate(expectedRate)
+                .rate(actualRate)
                 .date(LocalDateTime.now())
                 .build();
 
@@ -107,10 +115,64 @@ public class GifServiceTest {
         boolean result = gifService.isRateIncreased(baseCurrency, currency);
 
         // then
-        if (expectedValid) {
-            Assertions.assertTrue(result);
+        if (expectedRateIncreased) {
+            assertTrue(result);
         } else {
-            Assertions.assertFalse(result);
+            assertFalse(result);
+        }
+
+        verify(currencyRateDeliveryService).getActualCurrencyRateEntity(
+                baseCurrency,
+                currency
+        );
+        verify(repository).findLatestCurrencyRateByBaseCurrencyAndCurrencyAndDate(
+                baseCurrency,
+                currency,
+                actualRateEntity.getDate()
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+            "Курс увеличился,true",
+            "Курс не изменился,false",
+            "Курс уменьшился,false",
+    })
+    @DisplayName("""
+            Должен вернуть гифку из позитивного списка, если курс возрос и
+             гифку из негативного списка, если упал или равен предыдущему
+            """)
+    void getRandomGif(String description, boolean expectedRateIncreased) {
+
+        // given
+        GifDto gifPositiveDto1 = new GifDto();
+        GifDto gifPositiveDto2 = new GifDto();
+        GifDto gifPositiveDto3 = new GifDto();
+
+        List<GifDto> positiveGifDtos = List.of(gifPositiveDto1, gifPositiveDto2, gifPositiveDto3);
+
+        GifDto gifNegativeDto1 = new GifDto();
+        GifDto gifNegativeDto2 = new GifDto();
+        GifDto gifNegativeDto3 = new GifDto();
+
+        List<GifDto> negativeGifDtos = List.of(gifNegativeDto1, gifNegativeDto2, gifNegativeDto3);
+
+        if (expectedRateIncreased) {
+            when(gifSearchService.getGifsForWord(anyString())).thenReturn(positiveGifDtos);
+        } else {
+            when(gifSearchService.getGifsForWord(anyString())).thenReturn(negativeGifDtos);
+        }
+
+        // when
+        GifDto resultGifDto = gifService.getRandomGif(expectedRateIncreased);
+
+        // then
+        if (expectedRateIncreased) {
+            assertTrue(positiveGifDtos.contains(resultGifDto));
+            verify(gifSearchService).getGifsForWord(positiveRateSearchWord);
+        } else {
+            assertTrue(negativeGifDtos.contains(resultGifDto));
+            verify(gifSearchService).getGifsForWord(negativeRateSearchWord);
         }
     }
 }

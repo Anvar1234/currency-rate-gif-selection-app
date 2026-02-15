@@ -1,6 +1,6 @@
-description,lastRate,expectedValid
-Прошлый курс ниже ожидаемого,90.00,true
-Прошлый курс равен ожидаемому,97.50,false
-Прошлый курс выше ожидаемого,100.00,false
+description,actualRate,lastRate,expectedRateIncreased
+Новый курс выше прошлого,97.50,90.00,true
+Новый курс равен прошлому,97.50,97.50,false
+Новый курс ниже прошлого,97.50,100.00,false
 
 

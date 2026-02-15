@@ -36,8 +36,6 @@ public class GifService {
 
     /**
      * Получение URL гифки.
-     * @param baseCurrency
-     * @param currency
      */
     public String getGifsUrl(String baseCurrency, String currency) {
         log.info("Вызов метода getGifsUrl() в классе GifService. Получение URL гифки.");
@@ -47,7 +45,6 @@ public class GifService {
 
     /**
      * Получение случайной гифки из списка.
-     * @param isRateIncreased
      */
     protected GifDto getRandomGif(boolean isRateIncreased) {
         log.info("Вызов метода getRandomGif() в классе GifService. Получение случайной гифки.");
@@ -62,8 +59,6 @@ public class GifService {
 
     /**
      * Проверка на увеличение курса валюты.
-     * @param incomingBaseCurrency
-     * @param incomingCurrency
      */
     protected boolean isRateIncreased(
             String incomingBaseCurrency,

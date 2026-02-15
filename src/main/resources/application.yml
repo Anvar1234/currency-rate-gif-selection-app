@@ -26,6 +26,8 @@ external-giphy:
 
 external-exchangerate:
   url: https://v6.exchangerate-api.com/v6/${EXCHANGERATE_API_KEY}/latest # задать в Run Configuration: eafb...
+  base-currency: USD
+  target-currency: RUB
 
 logging:
   level:
