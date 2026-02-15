@@ -29,17 +29,27 @@ public class GifService {
 
     private final GifSearchService gifSearchService;
 
-    private final CurrencyRateDeliveryService currencyRateDeliveryService;
-
     private final CurrencyRateRepository currencyRateRepository;
 
+    private final CurrencyRateDeliveryService currencyRateDeliveryService;
+
+
+    /**
+     * Получение URL гифки.
+     * @param baseCurrency
+     * @param currency
+     */
     public String getGifsUrl(String baseCurrency, String currency) {
         log.info("Вызов метода getGifsUrl() в классе GifService. Получение URL гифки.");
 
         return getRandomGif(isRateIncreased(baseCurrency, currency)).getUrl();
     }
 
-    private GifDto getRandomGif(boolean isRateIncreased) {
+    /**
+     * Получение случайной гифки из списка.
+     * @param isRateIncreased
+     */
+    protected GifDto getRandomGif(boolean isRateIncreased) {
         log.info("Вызов метода getRandomGif() в классе GifService. Получение случайной гифки.");
 
         String searchWord = isRateIncreased ?
@@ -50,7 +60,12 @@ public class GifService {
         return gifs.get(new Random().nextInt(gifs.size()));
     }
 
-    private boolean isRateIncreased(
+    /**
+     * Проверка на увеличение курса валюты.
+     * @param incomingBaseCurrency
+     * @param incomingCurrency
+     */
+    protected boolean isRateIncreased(
             String incomingBaseCurrency,
             String incomingCurrency
     ) {

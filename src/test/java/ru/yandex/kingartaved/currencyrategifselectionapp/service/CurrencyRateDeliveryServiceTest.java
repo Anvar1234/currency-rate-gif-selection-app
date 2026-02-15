@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 @Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
-public class CurrencyRateDeliveryServiceIntegrationTest {
+public class CurrencyRateDeliveryServiceTest {
 
     private String baseCurrency;
     private String currency;
@@ -46,7 +46,7 @@ public class CurrencyRateDeliveryServiceIntegrationTest {
     private CurrencyRateDeliveryService service;
 
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
@@ -83,7 +83,7 @@ public class CurrencyRateDeliveryServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("Должен выбросить исключение при отсутствии поля conversionRates в ответе")
+    @DisplayName("Должен выбросить исключение при отсутствии поля conversionRates в ответе от внешнего сервиса")
     void fetchCurrencyRate_shouldThrowException_whenConversionRatesIsNull() {
 
         // given
