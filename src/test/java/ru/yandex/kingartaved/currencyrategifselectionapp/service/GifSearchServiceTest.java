@@ -25,7 +25,7 @@ public class GifSearchServiceTest {
     private GifSearchService gifSearchService;
 
     /**
-     * Тестирование кэширования
+     * Должен вызываться один раз для одного слова
      */
     @Test
     void getGifsForWord_callOnceForWord_whenCalledTwice() {
@@ -47,7 +47,7 @@ public class GifSearchServiceTest {
     }
 
     /**
-     * Тестирование получения списка GIF-ов
+     * Должен возвращать список GifDto при успешном ответе от GiphyService
      */
     @Test
     void getGifsForWord_returnGifList_whenGiphyServiceReturnsNonEmptyResponse() {
@@ -69,5 +69,4 @@ public class GifSearchServiceTest {
         assertThat(result).containsExactly(gif1, gif2);
         verify(giphyServiceFeignClient, times(1)).getGifData("testSearchWord");
     }
-
 }

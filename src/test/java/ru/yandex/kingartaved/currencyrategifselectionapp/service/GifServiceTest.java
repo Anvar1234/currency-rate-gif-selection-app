@@ -46,7 +46,6 @@ public class GifServiceTest {
     @Value("${test-external-giphy.search-word.negative-rate}")
     private String negativeRateSearchWord;
 
-
     @MockBean
     private GifSearchService gifSearchService;
 
