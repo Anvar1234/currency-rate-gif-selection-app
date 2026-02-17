@@ -52,7 +52,7 @@
 - Подожди, пока IDEA проиндексирует проект и скачает зависимости (это может занять несколько минут)
 
 3. **Создай файл `.env`** в корневой папке проекта:
-POSTGRES_PASSWORD=mysecretpassword
+POSTGRES_PASSWORD=твой_пароль_postgres
 GIPHY_API_KEY=твой_ключ_giphy
 EXCHANGERATE_API_KEY=твой_ключ_exchangerate
 
