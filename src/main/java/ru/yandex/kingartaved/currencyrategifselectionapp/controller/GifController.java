@@ -1,11 +1,8 @@
 package ru.yandex.kingartaved.currencyrategifselectionapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.kingartaved.currencyrategifselectionapp.service.GifService;
 
-import java.io.IOException;
+import java.net.URI;
 
 /**
  * Основной контроллер приложения.
@@ -22,6 +19,7 @@ import java.io.IOException;
 @RequestMapping("api/v1/gifs")
 @RequiredArgsConstructor
 public class GifController {
+
     private final GifService gifService;
 
     @Operation(
@@ -40,14 +38,13 @@ public class GifController {
             responseCode = "302",
             description = "Redirect to GIF")
     @GetMapping()
-    public ResponseEntity<Void> getGif(
-            @Parameter(hidden = true)
-            HttpServletResponse response
-    ) throws IOException {
+    public ResponseEntity<Void> getGif() {
 
         String gifUrl = gifService.getGifsUrl();
 
-        response.sendRedirect(gifUrl);
-        return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).build();
+        return ResponseEntity
+                .status(HttpStatus.TEMPORARY_REDIRECT)   // Код 302 — временный редирект
+                .location(URI.create(gifUrl))            // куда редиректить
+                .build();                                // Собираем финальный ответ
     }
 }
