@@ -1,6 +1,7 @@
 package ru.yandex.kingartaved.currencyrategifselectionapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,12 @@ import java.util.Random;
 @Slf4j
 public class GifService {
 
+    @Value("${external-exchangerate.base-currency}")
+    private String baseCurrency;
+
+    @Value("${external-exchangerate.target-currency}")
+    private String currency;
+
     @Value("${external-giphy.search-word.positive-rate}")
     private String positiveRateSearchWord;
 
@@ -37,7 +44,7 @@ public class GifService {
     /**
      * Получение URL гифки.
      */
-    public String getGifsUrl(String baseCurrency, String currency) {
+    public String getGifsUrl() {
         log.info("Вызов метода getGifsUrl() в классе GifService. Получение URL гифки.");
 
         return getRandomGif(isRateIncreased(baseCurrency, currency)).getUrl();
