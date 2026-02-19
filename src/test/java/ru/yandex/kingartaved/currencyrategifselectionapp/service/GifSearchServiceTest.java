@@ -33,7 +33,7 @@ public class GifSearchServiceTest {
         // given
         String searchWord = "test";
         GifSearchResponseDto mockResponse = new GifSearchResponseDto();
-        mockResponse.setData(List.of(new GifDto())); // непустой ответ
+        mockResponse.setData(List.of(GifDto.builder().build())); // непустой ответ
 
         when(giphyServiceFeignClient.getGifData(searchWord)).thenReturn(mockResponse);
 
@@ -53,8 +53,8 @@ public class GifSearchServiceTest {
     void getGifsForWord_returnGifList_whenGiphyServiceReturnsNonEmptyResponse() {
 
         //given
-        GifDto gif1 = new GifDto();
-        GifDto gif2 = new GifDto();
+        GifDto gif1 = GifDto.builder().build();
+        GifDto gif2 = GifDto.builder().build();
 
         GifSearchResponseDto gifSearchResponseDto = new GifSearchResponseDto();
         gifSearchResponseDto.setData(List.of(gif1, gif2));

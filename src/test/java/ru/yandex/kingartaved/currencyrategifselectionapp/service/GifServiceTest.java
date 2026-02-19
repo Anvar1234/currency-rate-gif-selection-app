@@ -3,7 +3,6 @@ package ru.yandex.kingartaved.currencyrategifselectionapp.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +24,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,11 +71,14 @@ public class GifServiceTest {
 
     @ParameterizedTest(name = "{0}")
     @CsvFileSource(
-            resources = "/rates/isRateIncreased_higherAndLowerExchangeRates_cases.csv",
+            resources = "/rates/getGifsUrl_higherAndLowerExchangeRates_cases.csv",
             numLinesToSkip = 1
     )
-    @DisplayName("Должен вернуть true, если курс возрос и false, если упал или равен предыдущему")
-    void isRateIncreased_shouldReturnTrue_whenRateIncreased(
+    @DisplayName("""
+            Должен вернуть гифку из позитивного списка, если курс возрос и
+            гифку из негативного списка, если курс уменьшился или равен предыдущему.
+            """)
+    void getGifsUrl_shouldPassAllCases(
             String description,
             BigDecimal actualRate,
             BigDecimal lastRate,
@@ -85,6 +86,7 @@ public class GifServiceTest {
     ) {
 
         // given
+        // ожидаемые сущности актуального и предыдущего курсов валют для приватного метода isRateIncreased()
         CurrencyRateEntity actualRateEntity = CurrencyRateEntity.builder()
                 .baseCurrency(baseCurrency)
                 .currency(currency)
@@ -110,14 +112,44 @@ public class GifServiceTest {
                 actualRateEntity.getDate()
         )).thenReturn(Optional.of(lastRateEntity));
 
+        // ожидаемые гифки по словам для приватного метода getGifsForWord()
+        GifDto gifDto = GifDto.builder()
+                .url("positive_url1")
+                .build();
+
+        GifDto gifDto2 = GifDto.builder()
+                .url("positive_url2")
+                .build();
+
+        List<GifDto> positiveGifDtos = List.of(gifDto, gifDto2);
+
+        GifDto gifDto3 = GifDto.builder()
+                .url("negative_url1")
+                .build();
+
+        GifDto gifDto4 = GifDto.builder()
+                .url("negative_url2")
+                .build();
+
+        List<GifDto> negativeGifDtos = List.of(gifDto3, gifDto4);
+
+        when(gifSearchService.getGifsForWord(positiveRateSearchWord))
+                .thenReturn(positiveGifDtos);
+        when(gifSearchService.getGifsForWord(negativeRateSearchWord))
+                .thenReturn(negativeGifDtos);
+
         // when
-        boolean result = gifService.isRateIncreased(baseCurrency, currency);
+        String result = gifService.getGifsUrl();
 
         // then
         if (expectedRateIncreased) {
-            assertTrue(result);
+            assertTrue(result.contains("positive_url"));
+
+            verify(gifSearchService).getGifsForWord(positiveRateSearchWord);
         } else {
-            assertFalse(result);
+            assertTrue(result.contains("negative_url"));
+
+            verify(gifSearchService).getGifsForWord(negativeRateSearchWord);
         }
 
         verify(currencyRateDeliveryService).getActualCurrencyRateEntity(
@@ -129,49 +161,6 @@ public class GifServiceTest {
                 currency,
                 actualRateEntity.getDate()
         );
-    }
 
-    @ParameterizedTest(name = "{0}")
-    @CsvSource({
-            "Курс увеличился,true",
-            "Курс не изменился,false",
-            "Курс уменьшился,false",
-    })
-    @DisplayName("""
-            Должен вернуть гифку из позитивного списка, если курс возрос и
-             гифку из негативного списка, если упал или равен предыдущему
-            """)
-    void getRandomGif(String description, boolean expectedRateIncreased) {
-
-        // given
-        GifDto gifPositiveDto1 = new GifDto();
-        GifDto gifPositiveDto2 = new GifDto();
-        GifDto gifPositiveDto3 = new GifDto();
-
-        List<GifDto> positiveGifDtos = List.of(gifPositiveDto1, gifPositiveDto2, gifPositiveDto3);
-
-        GifDto gifNegativeDto1 = new GifDto();
-        GifDto gifNegativeDto2 = new GifDto();
-        GifDto gifNegativeDto3 = new GifDto();
-
-        List<GifDto> negativeGifDtos = List.of(gifNegativeDto1, gifNegativeDto2, gifNegativeDto3);
-
-        if (expectedRateIncreased) {
-            when(gifSearchService.getGifsForWord(anyString())).thenReturn(positiveGifDtos);
-        } else {
-            when(gifSearchService.getGifsForWord(anyString())).thenReturn(negativeGifDtos);
-        }
-
-        // when
-        GifDto resultGifDto = gifService.getRandomGif(expectedRateIncreased);
-
-        // then
-        if (expectedRateIncreased) {
-            assertTrue(positiveGifDtos.contains(resultGifDto));
-            verify(gifSearchService).getGifsForWord(positiveRateSearchWord);
-        } else {
-            assertTrue(negativeGifDtos.contains(resultGifDto));
-            verify(gifSearchService).getGifsForWord(negativeRateSearchWord);
-        }
     }
 }
