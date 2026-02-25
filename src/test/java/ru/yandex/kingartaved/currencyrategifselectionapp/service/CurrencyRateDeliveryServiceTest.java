@@ -68,7 +68,6 @@ public class CurrencyRateDeliveryServiceTest {
         this.expectedRate = new BigDecimal("97.50");
     }
 
-
     @Test
     @DisplayName("Должен выбросить исключение при получении null от внешнего сервиса")
     void fetchCurrencyRate_shouldThrowException_whenResponseIsNull() {

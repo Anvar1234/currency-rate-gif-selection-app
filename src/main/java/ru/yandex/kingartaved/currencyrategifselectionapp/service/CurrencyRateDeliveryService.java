@@ -49,7 +49,7 @@ public class CurrencyRateDeliveryService {
         return saveCurrencyRateEntity(actualCurrencyRateEntity);
     }
 
-    protected BigDecimal fetchCurrencyRate(String incomingBaseCurrency, String incomingCurrency) {
+    private BigDecimal fetchCurrencyRate(String incomingBaseCurrency, String incomingCurrency) {
         log.debug("Получение курса для валют: {}/{}", incomingBaseCurrency, incomingCurrency);
 
         CurrencyRateResponseDto currencyRateResponseDto = exchangeRateServiceFeignClient.
@@ -80,7 +80,7 @@ public class CurrencyRateDeliveryService {
         return actualRate;
     }
 
-    protected CurrencyRateEntity buildCurrencyRateEntity(
+    private CurrencyRateEntity buildCurrencyRateEntity(
             String incomingBaseCurrency,
             String incomingCurrency,
             BigDecimal actualRate
@@ -96,7 +96,7 @@ public class CurrencyRateDeliveryService {
                 build();
     }
 
-    protected CurrencyRateEntity saveCurrencyRateEntity(CurrencyRateEntity currencyRateEntity) {
+    private CurrencyRateEntity saveCurrencyRateEntity(CurrencyRateEntity currencyRateEntity) {
 
         log.debug("Сохранение сущности в БД: {}", currencyRateEntity);
 

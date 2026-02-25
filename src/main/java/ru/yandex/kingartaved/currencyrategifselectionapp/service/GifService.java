@@ -52,7 +52,7 @@ public class GifService {
     /**
      * Получение случайной гифки из списка.
      */
-    protected GifDto getRandomGif(boolean isRateIncreased) {
+    private GifDto getRandomGif(boolean isRateIncreased) {
         log.info("Вызов метода getRandomGif() в классе GifService. Получение случайной гифки.");
 
         String searchWord = isRateIncreased ?
@@ -66,7 +66,7 @@ public class GifService {
     /**
      * Проверка на увеличение курса валюты.
      */
-    protected boolean isRateIncreased(
+    private boolean isRateIncreased(
             String incomingBaseCurrency,
             String incomingCurrency
     ) {
