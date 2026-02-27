@@ -9,11 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.yandex.kingartaved.currencyrategifselectionapp.client.ExchangeRateServiceFeignClient;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.model.CurrencyRateEntity;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.repository.CurrencyRateRepository;
@@ -28,8 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@Testcontainers
-@SpringBootTest
+@SpringBootTest(classes = CurrencyRateDeliveryService.class)
 @ActiveProfiles("test")
 public class CurrencyRateDeliveryServiceTest {
 
@@ -50,33 +44,23 @@ public class CurrencyRateDeliveryServiceTest {
     @Autowired
     private CurrencyRateDeliveryService service;
 
-    @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test");
-
-    @DynamicPropertySource
-    static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
-
     @BeforeEach
     void setUp() {
         this.expectedRate = new BigDecimal("97.50");
     }
 
     @Test
-    @DisplayName("Должен выбросить исключение при получении null от внешнего сервиса")
-    void fetchCurrencyRate_shouldThrowException_whenResponseIsNull() {
+    @DisplayName("""
+            Должен выбросить исключение при получении null от внешнего сервиса.
+             Вызов репозитория осуществляться не должен.
+            """)
+    void getActualCurrencyRateEntity_shouldThrowException_whenResponseIsNull() {
 
         // given
         when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(null);
 
         // when
-        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
+        Executable action = () -> service.getActualCurrencyRateEntity(baseCurrency, currency);
 
         // then
         assertThrows(CurrencyRateNotFoundException.class, action);
@@ -85,8 +69,12 @@ public class CurrencyRateDeliveryServiceTest {
     }
 
     @Test
-    @DisplayName("Должен выбросить исключение при отсутствии поля conversionRates в ответе от внешнего сервиса")
-    void fetchCurrencyRate_shouldThrowException_whenConversionRatesIsNull() {
+    @DisplayName("""
+            Должен выбросить исключение CurrencyRateNotFoundException при
+             отсутствии поля conversionRates в ответе от внешнего сервиса.
+             Вызов репозитория осуществляться не должен.
+            """)
+    void getActualCurrencyRateEntity_shouldThrowException_whenConversionRatesIsNull() {
 
         // given
         CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
@@ -95,7 +83,7 @@ public class CurrencyRateDeliveryServiceTest {
         when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(responseDto);
 
         // when
-        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
+        Executable action = () -> service.getActualCurrencyRateEntity(baseCurrency, currency);
 
         // then
         assertThrows(CurrencyRateNotFoundException.class, action);
@@ -104,8 +92,11 @@ public class CurrencyRateDeliveryServiceTest {
     }
 
     @Test
-    @DisplayName("Должен выбросить исключение при отсутствии запрашиваемой валюты в мапе conversionRates")
-    void fetchCurrencyRate_shouldThrowException_whenCurrencyNotInResponse() {
+    @DisplayName("""
+            Должен выбросить исключение при отсутствии запрашиваемой валюты в мапе conversionRates.
+             Вызов репозитория осуществляться не должен.
+            """)
+    void getActualCurrencyRateEntity_shouldThrowException_whenCurrencyNotInResponse() {
 
         // given
         CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
@@ -115,7 +106,7 @@ public class CurrencyRateDeliveryServiceTest {
         when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(responseDto);
 
         // when
-        Executable action = () -> service.fetchCurrencyRate(baseCurrency, currency);
+        Executable action = () -> service.getActualCurrencyRateEntity(baseCurrency, currency);
 
         // then
         assertThrows(CurrencyRateNotFoundException.class, action);
@@ -124,7 +115,11 @@ public class CurrencyRateDeliveryServiceTest {
     }
 
     @Test
-    @DisplayName("Должен сохранить сущность с валютами в верхнем регистре при вызове с нижним регистром")
+    @DisplayName("""
+            Должен преобразовать значения валют к верхнему регистру при входе аргументов в нижнем регистре.
+             Вызов метода feign-клиента getRates() должен осуществляться единожды и
+             со значением валюты в верхнем регистре.
+            """)
     void getActualCurrencyRateEntity_shouldConvertToUpperCase_whenParamsInLowerCase() {
 
         // given
@@ -153,7 +148,11 @@ public class CurrencyRateDeliveryServiceTest {
     }
 
     @Test
-    @DisplayName("Должен успешно получить и сохранить курс валюты")
+    @DisplayName("""
+            Должен успешно получить и сохранить курс валюты.
+             Вызов метода feign-клиента getRates() должен осуществляться единожды и со значением валюты 'USD'.
+             Вызов метода репозитория save() должен осуществляться единожды и с сущностью типа CurrencyRateEntity.
+            """)
     void getActualCurrencyRateEntity_shouldReturnSavedEntity_whenSuccessful() {
 
         // given
@@ -183,5 +182,4 @@ public class CurrencyRateDeliveryServiceTest {
         verify(exchangeRateServiceFeignClient).getRates("USD");
         verify(repository).save(any(CurrencyRateEntity.class));
     }
-
 }

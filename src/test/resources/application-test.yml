@@ -13,14 +13,11 @@ spring:
 
 test-external-giphy:
   api-key: test-giphy-key
-#  url: http://dont-call-in-tests.com
   search-word:
     positive-rate: rich
     negative-rate: broke
-#  search-limit: 25
 
 test-external-exchangerate:
-#  url: http://dont-call-in-tests.com
   base-currency: USD
   target-currency: RUB
 

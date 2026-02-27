@@ -2,9 +2,14 @@ package ru.yandex.kingartaved.currencyrategifselectionapp.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.cache.annotation.EnableCaching;
 import ru.yandex.kingartaved.currencyrategifselectionapp.client.GiphyServiceFeignClient;
 import ru.yandex.kingartaved.currencyrategifselectionapp.dto.GifDto;
 import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.GifSearchResponseDto;
@@ -14,8 +19,11 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest // Тяжелее, но нужно для проверки кэширования
-@ActiveProfiles("test")
+@SpringBootTest(classes = {
+        GifSearchService.class,
+        CacheAutoConfiguration.class  // для кэширования
+})
+@EnableCaching  // включаем кэширование
 public class GifSearchServiceTest {
 
     @MockBean
