@@ -20,6 +20,7 @@ test-external-giphy:
 test-external-exchangerate:
   base-currency: USD
   target-currency: RUB
+  expected-rate: 97.5
 
 logging:
   level:

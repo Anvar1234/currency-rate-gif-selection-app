@@ -1,14 +1,12 @@
 package ru.yandex.kingartaved.currencyrategifselectionapp.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.kingartaved.currencyrategifselectionapp.client.ExchangeRateServiceFeignClient;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.model.CurrencyRateEntity;
 import ru.yandex.kingartaved.currencyrategifselectionapp.data.repository.CurrencyRateRepository;
@@ -23,31 +21,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = CurrencyRateDeliveryService.class)
-@ActiveProfiles("test")
-public class CurrencyRateDeliveryServiceTest {
+@ExtendWith(MockitoExtension.class)
+class CurrencyRateDeliveryServiceUnitTest {
 
-    @Value("${test-external-exchangerate.base-currency}")
-    private String baseCurrency;
-
-    @Value("${test-external-exchangerate.target-currency}")
-    private String currency;
-
-    private BigDecimal expectedRate;
-
-    @MockBean
+    @Mock
     private ExchangeRateServiceFeignClient exchangeRateServiceFeignClient;
 
-    @MockBean
+    @Mock
     private CurrencyRateRepository repository;
 
-    @Autowired
+    @InjectMocks
     private CurrencyRateDeliveryService service;
 
-    @BeforeEach
-    void setUp() {
-        this.expectedRate = new BigDecimal("97.50");
-    }
+    private static final String BASE_CURRENCY = "USD";
+    private static final String TARGET_CURRENCY = "RUB";
+    private static final BigDecimal EXPECTED_RATE = new BigDecimal("97.50");
 
     @Test
     @DisplayName("""
@@ -57,10 +45,10 @@ public class CurrencyRateDeliveryServiceTest {
     void getActualCurrencyRateEntity_shouldThrowException_whenResponseIsNull() {
 
         // given
-        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(null);
+        when(exchangeRateServiceFeignClient.getRates(BASE_CURRENCY)).thenReturn(null);
 
         // when
-        Executable action = () -> service.getActualCurrencyRateEntity(baseCurrency, currency);
+        Executable action = () -> service.getActualCurrencyRateEntity(BASE_CURRENCY, TARGET_CURRENCY);
 
         // then
         assertThrows(CurrencyRateNotFoundException.class, action);
@@ -80,10 +68,10 @@ public class CurrencyRateDeliveryServiceTest {
         CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
         responseDto.setConversionRates(null);
 
-        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(responseDto);
+        when(exchangeRateServiceFeignClient.getRates(BASE_CURRENCY)).thenReturn(responseDto);
 
         // when
-        Executable action = () -> service.getActualCurrencyRateEntity(baseCurrency, currency);
+        Executable action = () -> service.getActualCurrencyRateEntity(BASE_CURRENCY, TARGET_CURRENCY);
 
         // then
         assertThrows(CurrencyRateNotFoundException.class, action);
@@ -100,13 +88,13 @@ public class CurrencyRateDeliveryServiceTest {
 
         // given
         CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
-        Map<String, BigDecimal> conversionRates = Map.of("EUR", expectedRate);
+        Map<String, BigDecimal> conversionRates = Map.of("EUR", EXPECTED_RATE);
         responseDto.setConversionRates(conversionRates);
 
-        when(exchangeRateServiceFeignClient.getRates(baseCurrency)).thenReturn(responseDto);
+        when(exchangeRateServiceFeignClient.getRates(BASE_CURRENCY)).thenReturn(responseDto);
 
         // when
-        Executable action = () -> service.getActualCurrencyRateEntity(baseCurrency, currency);
+        Executable action = () -> service.getActualCurrencyRateEntity(BASE_CURRENCY, TARGET_CURRENCY);
 
         // then
         assertThrows(CurrencyRateNotFoundException.class, action);
@@ -126,7 +114,7 @@ public class CurrencyRateDeliveryServiceTest {
         String baseCurrencyInLowerCase = "usd";
         String currencyInLowerCase = "rub";
 
-        Map<String, BigDecimal> conversionRates = Map.of("RUB", expectedRate);
+        Map<String, BigDecimal> conversionRates = Map.of("RUB", EXPECTED_RATE);
         CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();
         responseDto.setConversionRates(conversionRates);
 
@@ -157,13 +145,13 @@ public class CurrencyRateDeliveryServiceTest {
 
         // given
         CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto(); // для метода getRate
-        Map<String, BigDecimal> conversionRates = Map.of(currency, expectedRate);
+        Map<String, BigDecimal> conversionRates = Map.of(TARGET_CURRENCY, EXPECTED_RATE);
         responseDto.setConversionRates(conversionRates);
 
         CurrencyRateEntity expectedEntity = CurrencyRateEntity.builder() // для метода findLatestCurrencyRateByBaseCurrencyAndCurrencyAndDate
-                .baseCurrency(baseCurrency)
-                .currency(currency)
-                .rate(expectedRate)
+                .baseCurrency(BASE_CURRENCY)
+                .currency(TARGET_CURRENCY)
+                .rate(EXPECTED_RATE)
                 .date(LocalDateTime.now())
                 .build();
 
@@ -171,13 +159,13 @@ public class CurrencyRateDeliveryServiceTest {
         when(repository.save(any(CurrencyRateEntity.class))).thenReturn(expectedEntity);
 
         // when
-        CurrencyRateEntity actual = service.getActualCurrencyRateEntity(baseCurrency, currency);
+        CurrencyRateEntity actual = service.getActualCurrencyRateEntity(BASE_CURRENCY, TARGET_CURRENCY);
 
         // then
         assertNotNull(actual);
         assertEquals("USD", actual.getBaseCurrency());
         assertEquals("RUB", actual.getCurrency());
-        assertEquals(expectedRate, actual.getRate());
+        assertEquals(EXPECTED_RATE, actual.getRate());
 
         verify(exchangeRateServiceFeignClient).getRates("USD");
         verify(repository).save(any(CurrencyRateEntity.class));
