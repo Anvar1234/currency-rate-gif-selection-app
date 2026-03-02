@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,22 +23,20 @@ import ru.yandex.kingartaved.currencyrategifselectionapp.dto.response.CurrencyRa
 import ru.yandex.kingartaved.currencyrategifselectionapp.exception.CurrencyRateNotFoundException;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
  * Интеграционный тест для CurrencyRateDeliveryService.
  * Тестирует взаимодействие с реальной БД (через Testcontainers) и моками внешнего API.
  */
-@DataJpaTest  // ← Специальная аннотация для JPA тестов
+@DataJpaTest
 @Testcontainers
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)  // ← Не заменять на встроенную БД
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(CurrencyRateDeliveryService.class)
 public class CurrencyRateDeliveryServiceIntegrationTest {
 
@@ -78,7 +75,7 @@ public class CurrencyRateDeliveryServiceIntegrationTest {
 
     @Test
     @DisplayName("Должен успешно получить курс валюты и сохранить его в БД")
-    void getActualCurrencyRateEntity_shouldReturnFirstExpectedRateEntity_whenFirstCurrencyRateRequested() {
+    void getActualCurrencyRateEntity_shouldReturnExpectedRateEntityAndSaveToDatabase() {
 
         // given
         CurrencyRateResponseDto responseDto = new CurrencyRateResponseDto();

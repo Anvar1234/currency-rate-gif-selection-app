@@ -39,7 +39,6 @@ public class GifService {
 
     private final CurrencyRateDeliveryService currencyRateDeliveryService;
 
-
     /**
      * Получение URL гифки.
      */
