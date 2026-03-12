@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CurrencyRateDeliveryServiceUnitTest {
+public class CurrencyRateDeliveryServiceUnitTest {
 
     @Mock
     private ExchangeRateServiceFeignClient exchangeRateServiceFeignClient;

@@ -25,10 +25,10 @@ databaseChangeLog:
                       constraints:
                           nullable: false
                 - column:
-                    name: base_currency
-                    type: varchar(3)
-                    constraints:
-                      nullable: false
+                      name: base_currency
+                      type: varchar(3)
+                      constraints:
+                          nullable: false
                 - column:
                       name: rate
                       type: numeric(10, 4)

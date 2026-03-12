@@ -19,6 +19,10 @@
         <java.version>17</java.version>
         <springdoc-openapi.version>2.3.0</springdoc-openapi.version>
         <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <!-- JaCoCo Properties -->
+        <jacoco.version>0.8.11</jacoco.version>
+        <jacoco.min.line.coverate>0.80</jacoco.min.line.coverate>
+        <jacoco.min.branch.coverage>0.80</jacoco.min.branch.coverage>
     </properties>
 
     <dependencies>
@@ -137,6 +141,65 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+
+            <!-- JaCoCo Maven Plugin -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <!-- Подготовка агента JaCoCo перед тестами -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Создание отчета после тестов -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Проверка минимального покрытия -->
+                    <execution>
+                        <id>check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco.min.line.coverate}</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco.min.branch.coverage}</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                            <!-- Исключения из проверки покрытия -->
+                            <excludes>
+                                <exclude>**/config/*</exclude>
+                                <exclude>**/dto/*</exclude>
+                                <exclude>**/entity/*</exclude>
+                                <exclude>**/CurrencyRateGifSelectionAppApplication.class</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
